@@ -1,1 +1,1 @@
-# JabbrClientCpp
+# Native Jabbr Client 
