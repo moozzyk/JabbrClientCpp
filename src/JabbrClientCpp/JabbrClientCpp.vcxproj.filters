@@ -30,13 +30,34 @@
     <ClInclude Include="..\..\include\jabbrclient\authentication_provider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\jabbrclient\default_authentication_provider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="jabbr_client_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\jabbrclient\jabbr_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jabbrclient\log_on_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jabbrclient\room.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jabbr_events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json_materializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jabbrclient\default_authentication_provider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jabbrclient\user.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jabbrclient\user_status.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\jabbrclient\message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -54,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jabbr_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_materializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

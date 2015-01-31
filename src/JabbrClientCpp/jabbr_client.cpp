@@ -10,7 +10,7 @@ namespace jabbr
 
     jabbr_client::~jabbr_client() = default;
 
-    pplx::task<void> jabbr_client::connect(const utility::string_t& user_name, const utility::string_t& password, std::unique_ptr<authentication_provider> auth_provider)
+    pplx::task<log_on_info> jabbr_client::connect(const utility::string_t& user_name, const utility::string_t& password, std::unique_ptr<authentication_provider> auth_provider)
     {
         return m_pImpl->connect(user_name, password, std::move(auth_provider));
     }

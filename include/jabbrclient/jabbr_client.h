@@ -3,8 +3,7 @@
 #include "_exports.h"
 #include "pplx\pplxtasks.h"
 #include "authentication_provider.h"
-
-namespace pplx = concurrency;
+#include "log_on_info.h"
 
 namespace jabbr
 {
@@ -16,7 +15,7 @@ namespace jabbr
         JABBRCLIENTCPP_API jabbr_client(const utility::string_t& url);
         JABBRCLIENTCPP_API ~jabbr_client();
 
-        JABBRCLIENTCPP_API pplx::task<void> connect(const utility::string_t& user_name, const utility::string_t& password,
+        JABBRCLIENTCPP_API pplx::task<log_on_info> connect(const utility::string_t& user_name, const utility::string_t& password,
             std::unique_ptr<authentication_provider> auth_provider = nullptr);
 
     private:
