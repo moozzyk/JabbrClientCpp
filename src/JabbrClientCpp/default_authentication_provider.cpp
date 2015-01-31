@@ -51,7 +51,7 @@ namespace jabbr
             }
         });
 #endif
-        http_client client(U("https://jabbr-staging.apphb.com/"), config);
+        http_client client(m_url, config);
         http_request request{ U("POST") };
         request.set_request_uri(U("account/login"));
         request.headers().add(U("Content-Type"), U("application/x-www-form-urlencoded"));
