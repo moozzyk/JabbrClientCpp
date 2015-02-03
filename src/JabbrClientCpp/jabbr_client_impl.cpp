@@ -60,16 +60,15 @@ namespace jabbr
             mutable {
                 return chat_proxy.invoke<void>(U("Join"));
             })
-            .then([](pplx::task<void> chat_join_task)
+            .then([log_on_tce](pplx::task<void> chat_join_task)
             {
                 try
                 {
                     chat_join_task.get();
                 }
-                catch (const std::exception& e)
+                catch (const std::exception&)
                 {
-                    std::cout << e.what() << std::endl;
-                    throw;
+                    log_on_tce.set_exception(std::current_exception());
                 }
             });
 
