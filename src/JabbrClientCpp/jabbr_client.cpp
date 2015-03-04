@@ -14,4 +14,9 @@ namespace jabbr
     {
         return m_pImpl->connect(user_name, password, std::move(auth_provider));
     }
+
+    pplx::task<std::vector<room>> jabbr_client::get_rooms()
+    {
+        return m_pImpl->get_rooms();
+    }
 }

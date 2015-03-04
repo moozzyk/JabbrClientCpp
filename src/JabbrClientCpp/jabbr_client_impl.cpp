@@ -10,7 +10,7 @@ namespace jabbr
 {
     jabbr_client_impl::jabbr_client_impl(const utility::string_t& url)
         : m_url(url), m_jabbr_connection(std::make_shared<signalr::hub_connection>(url)),
-            m_chat_proxy(m_jabbr_connection->create_hub_proxy(U("Chat")))
+          m_chat_proxy(m_jabbr_connection->create_hub_proxy(U("Chat")))
     { }
 
     pplx::task<log_on_info> jabbr_client_impl::connect(const utility::string_t& user_name, const utility::string_t& password,
@@ -29,35 +29,22 @@ namespace jabbr
 
                 if (response.is_array() && response.as_array().size() > 0)
                 {
-                    auto rooms = response.as_array().at(0);
-                    if (rooms.is_array())
-                    {
-                        for (auto& room : rooms.as_array())
-                        {
-                            if (!room.is_object())
-                            {
-                                continue;
-                            }
-
-                            info.rooms.push_back(json_materializer::create_room(room));
-                        }
-                    }
+                    json_materializer::create_rooms(response.as_array().at(0), info.rooms);
                 }
 
                 log_on_tce.set(info);
             });
 
-        // TODO: references?
-        auto jabbr_connection = m_jabbr_connection;
-        auto chat_proxy = m_chat_proxy;
+        auto& jabbr_connection = m_jabbr_connection;
+        auto& chat_proxy = m_chat_proxy;
 
-        auth_provider->configure_connection(m_jabbr_connection, user_name, password)
-            .then([jabbr_connection]()
-            mutable {
+        return auth_provider->configure_connection(m_jabbr_connection, user_name, password)
+            .then([jabbr_connection]() mutable
+            {
                 return jabbr_connection->start();
             })
-            .then([chat_proxy]()
-            mutable {
+            .then([chat_proxy]() mutable
+            {
                 return chat_proxy.invoke<void>(U("Join"));
             })
             .then([log_on_tce](pplx::task<void> chat_join_task)
@@ -70,8 +57,21 @@ namespace jabbr
                 {
                     log_on_tce.set_exception(std::current_exception());
                 }
+            })
+            .then([log_on_tce]()
+            {
+                return pplx::task<log_on_info>(log_on_tce);
             });
+    }
 
-        return pplx::task<log_on_info>(log_on_tce);
+    pplx::task<std::vector<room>> jabbr_client_impl::get_rooms()
+    {
+        return m_chat_proxy.invoke<web::json::value>(U("GetRooms"))
+            .then([](const web::json::value &response)
+            {
+                std::vector<room> rooms;
+                json_materializer::create_rooms(response, rooms);
+                return rooms;
+            });
     }
 }

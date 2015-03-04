@@ -106,6 +106,22 @@ namespace jabbr
             return r;
         }
 
+        void create_rooms(const web::json::value& rooms_json, std::vector<room>& rooms)
+        {
+            if (rooms_json.is_array())
+            {
+                for (auto& room : rooms_json.as_array())
+                {
+                    if (!room.is_object())
+                    {
+                        continue;
+                    }
+
+                    rooms.push_back(json_materializer::create_room(room));
+                }
+            }
+        }
+
         namespace
         {
             user_status translate_status(const utility::string_t status)

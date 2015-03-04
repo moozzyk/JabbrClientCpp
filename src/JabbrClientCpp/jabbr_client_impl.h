@@ -14,6 +14,7 @@ namespace jabbr
 
         pplx::task<log_on_info> connect(const utility::string_t& user_name, const utility::string_t& password,
             std::unique_ptr<authentication_provider> auth_provider = nullptr);
+        pplx::task<std::vector<room>> get_rooms();
 
     private:
         utility::string_t m_url;
