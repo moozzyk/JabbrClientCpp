@@ -64,6 +64,15 @@ namespace jabbr
             });
     }
 
+    pplx::task<user> jabbr_client_impl::get_user_info()
+    {
+        return m_chat_proxy.invoke<web::json::value>(U("GetUserInfo"))
+            .then([](const web::json::value& response)
+            {
+                return json_materializer::create_user(response);
+            });
+    }
+
     pplx::task<std::vector<room>> jabbr_client_impl::get_rooms()
     {
         return m_chat_proxy.invoke<web::json::value>(U("GetRooms"))

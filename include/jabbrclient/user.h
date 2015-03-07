@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cpprest\details\basic_types.h"
+#include "cpprest\asyncrt_utils.h"
 #include "user_status.h"
 
 namespace jabbr

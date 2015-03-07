@@ -18,6 +18,7 @@ namespace jabbr
         JABBRCLIENTCPP_API pplx::task<log_on_info> connect(const utility::string_t& user_name, const utility::string_t& password,
             std::unique_ptr<authentication_provider> auth_provider = nullptr);
 
+        JABBRCLIENTCPP_API pplx::task<user> get_user_info();
         JABBRCLIENTCPP_API pplx::task<std::vector<room>> get_rooms();
 
     private:
