@@ -94,6 +94,7 @@
     <ClInclude Include="jabbr_model.h" />
     <ClInclude Include="jabbr_room.h" />
     <ClInclude Include="jabbr_user.h" />
+    <ClInclude Include="panel.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -104,6 +105,7 @@
     <ClCompile Include="jabbr_model.cpp" />
     <ClCompile Include="jabbr_room.cpp" />
     <ClCompile Include="jabbr_user.cpp" />
+    <ClCompile Include="panel.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -113,7 +115,7 @@
     <ProjectReference Include="..\JabbrClientCpp\JabbrClientCpp.vcxproj">
       <Project>{eca18ae3-27ce-4018-b1f1-347fd81e8303}</Project>
     </ProjectReference>
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

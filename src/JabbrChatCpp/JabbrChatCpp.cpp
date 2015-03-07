@@ -31,7 +31,6 @@ int _tmain(int argc, _TCHAR* argv[])
     auto user = argv[2];
     auto pwd = argv[3];
 
-    ucout << "Connecting..." << std::endl;
     jabbr_client client{ url };
     jabbr_console console{ client };
     console.run(user, pwd);
