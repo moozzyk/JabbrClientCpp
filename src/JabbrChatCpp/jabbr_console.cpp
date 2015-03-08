@@ -1,15 +1,18 @@
 #include "stdafx.h"
 #include <stdexcept>
+#include <cctype>
 #include "jabbr_console.h"
 #include "jabbr_user.h"
 #include "formatter.h"
 
 jabbr_console::jabbr_console(jabbr::jabbr_client client)
     : m_jabbr_client(client), m_input_handle(GetStdHandle(STD_INPUT_HANDLE)), m_output_handle(GetStdHandle(STD_OUTPUT_HANDLE)),
-    m_main_panel(main_panel_width, main_panel_height), m_prompt_panel(prompt_panel_width, prompt_panel_height)
+    m_main_panel(main_panel_width, main_panel_height), m_prompt_panel(prompt_panel_width, prompt_panel_height),
+    m_status_panel(status_panel_width, status_panel_height)
 {
     m_main_panel_coordinates = { 0, 0 };
-    m_prompt_coordinates = { 0, console_height - prompt_panel_height };
+    m_prompt_panel_coordinates = { 0, console_height - prompt_panel_height };
+    m_status_panel_coordinates = { 0, main_panel_height + 1 };
 
     SMALL_RECT console_size{ 0, 0, console_width - 1, console_height - 1 };
     SetConsoleWindowInfo(m_output_handle, TRUE, &console_size);
@@ -97,7 +100,7 @@ void jabbr_console::connect(utility::string_t user_name, utility::string_t passw
 void jabbr_console::run()
 {
     INPUT_RECORD event;
-
+    reset_prompt();
     auto exit = false;
     while (!exit)
     {
@@ -116,6 +119,7 @@ void jabbr_console::run()
                 break;
 
             case VK_RETURN:
+                process_input();
                 reset_prompt();
                 break;
 
@@ -171,11 +175,20 @@ void jabbr_console::run()
 void jabbr_console::reset_console()
 {
     fill(0, 0, console_width, console_height, L' ', FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
-    fill(m_main_panel.get_height() + 1, 0, console_width, 1, L'#', FOREGROUND_GREEN);
+    //fill(m_main_panel.get_height() + 1, 0, console_width, 1, L'#', FOREGROUND_GREEN);
     fill(0, m_main_panel.get_width() + 1, 1, m_main_panel.get_height() + 1, L'#', FOREGROUND_GREEN);
 
-    m_main_panel.fill(L' ', 0);
+    m_main_panel.fill(L'!', 0);
+    m_status_panel.fill('#', FOREGROUND_GREEN);
     reset_prompt();
+    redraw();
+}
+
+void jabbr_console::redraw()
+{
+    safe_console_write(m_main_panel, m_main_panel_coordinates);
+    safe_console_write(m_status_panel, m_status_panel_coordinates);
+    safe_console_write(m_prompt_panel, m_prompt_panel_coordinates);
 }
 
 void jabbr_console::fill(short top, short left, short width, short height, wchar_t filler, unsigned short attributes)
@@ -204,13 +217,13 @@ void jabbr_console::reset_prompt()
 
 void jabbr_console::flush_prompt()
 {
-    safe_console_write(m_prompt_panel, m_prompt_coordinates);
+    safe_console_write(m_prompt_panel, m_prompt_panel_coordinates);
 }
 
 void jabbr_console::set_cursor_position()
 {
-    SetConsoleCursorPosition(m_output_handle, COORD { m_prompt_coordinates.X + m_cursor_location % console_width,
-        m_prompt_coordinates.Y + (m_cursor_location / console_width) });
+    SetConsoleCursorPosition(m_output_handle, COORD { m_prompt_panel_coordinates.X + m_cursor_location % console_width,
+        m_prompt_panel_coordinates.Y + (m_cursor_location / console_width) });
 }
 
 void jabbr_console::safe_console_write(const CHAR_INFO* buffer, COORD buffer_size, SMALL_RECT& write_area)
@@ -226,4 +239,25 @@ void jabbr_console::safe_console_write(const panel& panel, COORD left_top)
 
     auto area = panel.get_area(left_top);
     WriteConsoleOutput(m_output_handle, panel.get_buffer(), panel.get_size(), COORD{ 0, 0 }, &area);
+}
+
+std::wstring jabbr_console::process_input()
+{
+    auto start_pos = 0, end_pos = prompt_line_length - 1;
+    auto buffer = m_prompt_panel.get_buffer();
+    for (; start_pos < prompt_line_length && std::isspace(buffer[start_pos].Char.UnicodeChar); start_pos++)
+    { }
+
+    for (; end_pos >= start_pos && std::isspace(buffer[end_pos].Char.UnicodeChar); end_pos--)
+    { }
+
+    auto input = std::wstring();
+    input.reserve(end_pos - start_pos + 1);
+
+    for (; start_pos <= end_pos; start_pos++)
+    {
+        input += buffer[start_pos].Char.UnicodeChar;
+    }
+
+    return input;
 }

@@ -53,8 +53,8 @@ namespace formatter
         write(U("/h         - show help screen"), panel, start_row + 2, column, white_foreground);
         write(U("ESC        - turns off help screen"), panel, start_row + 3, column, white_foreground);
         write(U("/j{room}   - join/switch room"), panel, start_row + 4, column, white_foreground);
-        write(U("/l{string} - list groups conatining {string}"), panel, start_row + 4, column, white_foreground);
-        write(U(":q         - exit"), panel, start_row + 5, column, white_foreground);
+        write(U("/l{string} - list groups conatining {string}"), panel, start_row + 5, column, white_foreground);
+        write(U(":q         - exit"), panel, start_row + 6, column, white_foreground);
     }
 
     void format_user_on_welcome_page(const jabbr_user& user, panel& panel)
