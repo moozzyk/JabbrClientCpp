@@ -2,11 +2,10 @@
 #include <stdexcept>
 #include <cctype>
 #include "jabbr_console.h"
-#include "jabbr_user.h"
 #include "formatter.h"
 
-jabbr_console::jabbr_console(jabbr::jabbr_client client)
-    : m_jabbr_client(client), m_input_handle(GetStdHandle(STD_INPUT_HANDLE)), m_output_handle(GetStdHandle(STD_OUTPUT_HANDLE)),
+jabbr_console::jabbr_console()
+    : m_input_handle(GetStdHandle(STD_INPUT_HANDLE)), m_output_handle(GetStdHandle(STD_OUTPUT_HANDLE)),
     m_main_panel(main_panel_width, main_panel_height), m_prompt_panel(prompt_panel_width, prompt_panel_height),
     m_status_panel(status_panel_width, status_panel_height)
 {
@@ -20,78 +19,26 @@ jabbr_console::jabbr_console(jabbr::jabbr_client client)
     COORD console_buffer_size{ console_width, console_height };
     SetConsoleScreenBufferSize(m_output_handle, console_buffer_size);
     SetConsoleMode(m_input_handle, ENABLE_WINDOW_INPUT);
+
+    reset_console();
 }
 
 jabbr_console::~jabbr_console() = default;
 
-void jabbr_console::run(utility::string_t user_name, utility::string_t password)
-{
-    reset_console();
-    display_welcome();
-
-    try
-    {
-        connect(user_name, password);
-        formatter::format_manual(m_main_panel);
-        formatter::format_user_on_welcome_page(m_jabbr_user, m_main_panel);
-        safe_console_write(m_main_panel, m_main_panel_coordinates);
-    }
-    catch (const std::exception& e)
-    {
-        formatter::write_centered(
-            utility::string_t(U("Could not connect to jabbr server."))
-                .append(utility::conversions::to_string_t(e.what())),
-            m_main_panel, 6, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-
-        return;
-    }
-
-    run();
-}
-
-void jabbr_console::display_welcome()
+void jabbr_console::display_welcome(jabbr_user* user)
 {
     formatter::format_welcome_page_header(m_main_panel);
+    formatter::format_manual(m_main_panel);
+    if (user)
+    {
+        formatter::format_user_on_welcome_page(*user, m_main_panel);
+    }
     safe_console_write(m_main_panel, m_main_panel_coordinates);
 }
 
-void jabbr_console::connect(utility::string_t user_name, utility::string_t password)
+void jabbr_console::display_connecting_status(std::wstring status_message)
 {
-    auto connect_task = m_jabbr_client.connect(user_name, password)
-        .then([&](jabbr::log_on_info log_on_info)
-    {
-        return m_jabbr_client.get_user_info()
-            .then([log_on_info](jabbr::user user)
-        {
-            auto user_model = jabbr_user(user);
-            for (const auto &room : log_on_info.rooms)
-            {
-                user_model.add_room(jabbr_room(room));
-            }
-
-            return pplx::task_from_result<jabbr_user>(user_model);
-        });
-
-    });
-
-    for (auto i = 0; !connect_task.is_done(); i++)
-    {
-        auto connecting_string =
-            utility::string_t(U("Connecting"))
-            .append(utility::string_t(i % 6, U('.')))
-            .append(utility::string_t(6 - (i % 6), U(' ')));
-
-        formatter::write_centered(connecting_string, m_main_panel, 6,
-            FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-
-        safe_console_write(m_main_panel, m_main_panel_coordinates);
-
-        pplx::wait(300);
-    }
-
-    m_jabbr_user = connect_task.get();
-
-    formatter::write_centered(U("     Connected!     "), m_main_panel, 6,
+    formatter::write_centered(status_message, m_main_panel, 6, 
         FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
     safe_console_write(m_main_panel, m_main_panel_coordinates);

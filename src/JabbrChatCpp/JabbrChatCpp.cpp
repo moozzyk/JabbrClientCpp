@@ -5,8 +5,7 @@
 
 #include "jabbrclient\jabbr_client.h"
 #include "jabbrclient\room.h"
-
-#include "jabbr_console.h"
+#include "jabbr_chat.h"
 
 using namespace jabbr;
 
@@ -31,9 +30,8 @@ int _tmain(int argc, _TCHAR* argv[])
     auto user = argv[2];
     auto pwd = argv[3];
 
-    jabbr_client client{ url };
-    jabbr_console console{ client };
-    console.run(user, pwd);
+    jabbr_chat chat{ url };
+    chat.run(user, pwd);
 
     /*
     jabbr_client client{ url };

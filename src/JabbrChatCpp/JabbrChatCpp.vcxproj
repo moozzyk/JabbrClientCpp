@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="formatter.h" />
+    <ClInclude Include="jabbr_chat.h" />
     <ClInclude Include="jabbr_console.h" />
     <ClInclude Include="jabbr_model.h" />
     <ClInclude Include="jabbr_room.h" />
@@ -102,6 +103,7 @@
   <ItemGroup>
     <ClCompile Include="formatter.cpp" />
     <ClCompile Include="JabbrChatCpp.cpp" />
+    <ClCompile Include="jabbr_chat.cpp" />
     <ClCompile Include="jabbr_console.cpp" />
     <ClCompile Include="jabbr_model.cpp" />
     <ClCompile Include="jabbr_room.cpp" />

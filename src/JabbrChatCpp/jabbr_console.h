@@ -9,15 +9,14 @@
 class jabbr_console
 {
 public:
-    jabbr_console(jabbr::jabbr_client);
+    jabbr_console();
     ~jabbr_console();
 
-    void run(utility::string_t user_name, utility::string_t password);
+    void run();
+    void display_welcome(jabbr_user* user);
+    void display_connecting_status(std::wstring status_message);
 
 private:
-    void run();
-    void display_welcome();
-    void connect(utility::string_t user_name, utility::string_t password);
     void reset_console();
     void redraw();
     void reset_prompt();
@@ -29,7 +28,6 @@ private:
     void jabbr_console::safe_console_write(const panel& panel, COORD left_top);
 
 private:
-    jabbr::jabbr_client m_jabbr_client;
     const HANDLE m_input_handle;
     const HANDLE m_output_handle;
 
@@ -53,7 +51,5 @@ private:
     short m_cursor_location = 0;
 
     std::mutex m_console_write_lock;
-
-    jabbr_user m_jabbr_user;
 };
 
