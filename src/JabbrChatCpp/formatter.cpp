@@ -75,4 +75,9 @@ namespace formatter
     {
         write_flush_left(error_message, panel, 0, BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     }
+
+    void format_info(panel& panel, const std::wstring& error_message)
+    {
+        write_flush_left(error_message, panel, 0, BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    }
 }

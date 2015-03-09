@@ -1,5 +1,6 @@
 #pragma once
 #include "jabbrclient\jabbr_client.h"
+#include "jabbrclient\room.h"
 #include "jabbr_console.h"
 #include "parser.h"
 
@@ -20,5 +21,7 @@ private:
     jabbr_console m_console;
     jabbr_user m_user;
     parser parser;
+
+    jabbr::room m_current_room;
 };
 

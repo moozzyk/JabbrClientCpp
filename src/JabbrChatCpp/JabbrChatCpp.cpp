@@ -33,6 +33,7 @@ int _tmain(int argc, _TCHAR* argv[])
     jabbr_chat chat{ url };
     chat.run(user, pwd);
 
+
     /*
     jabbr_client client{ url };
 

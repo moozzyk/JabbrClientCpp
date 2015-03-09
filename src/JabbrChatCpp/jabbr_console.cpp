@@ -131,11 +131,10 @@ void jabbr_console::run()
 void jabbr_console::reset_console()
 {
     fill(0, 0, console_width, console_height, L' ', FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
-    //fill(m_main_panel.get_height() + 1, 0, console_width, 1, L'#', FOREGROUND_GREEN);
     fill(0, m_main_panel.get_width() + 1, 1, m_main_panel.get_height() + 1, L'#', FOREGROUND_GREEN);
 
-    m_main_panel.fill(L' ', 0);
-    m_status_panel.fill('#', FOREGROUND_GREEN);
+    reset_main_panel();
+    reset_status();
     reset_prompt();
     redraw();
 }
@@ -218,8 +217,52 @@ std::wstring jabbr_console::get_user_input()
     return input;
 }
 
+void jabbr_console::reset_status()
+{
+    m_status_panel.fill('#', FOREGROUND_GREEN);
+}
+
 void jabbr_console::display_error(const std::wstring& error)
 {
+    reset_status();
     formatter::format_error(m_status_panel, error);
     safe_console_write(m_status_panel, m_status_panel_coordinates);
+}
+
+void jabbr_console::display_info(const std::wstring& error)
+{
+    reset_status();
+    formatter::format_info(m_status_panel, error);
+    safe_console_write(m_status_panel, m_status_panel_coordinates);
+}
+
+void jabbr_console::reset_main_panel()
+{
+    m_main_panel.fill(L' ', 0);
+}
+
+void jabbr_console::display_room(const jabbr::room& room)
+{
+    reset_main_panel();
+    m_main_panel.scroll_up();
+    set_title(room.name + L" " + room.topic);
+
+    for (auto const& m : room.recent_messages)
+    {
+        add_message(m);
+    }
+
+    safe_console_write(m_main_panel, m_main_panel_coordinates);
+}
+
+void jabbr_console::add_message(const jabbr::message& message)
+{
+    m_main_panel.scroll_up();
+    short current_position = 0;
+    short row = m_main_panel.get_height() - 1;
+    m_main_panel.write(message.when.to_string(utility::datetime::ISO_8601).substr(11, 8), row, current_position, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+    m_main_panel.write(L" <", row, current_position, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    m_main_panel.write(message.user.name, row, current_position, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    m_main_panel.write(L">: ", row, current_position, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    m_main_panel.write(message.content, row, current_position, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }

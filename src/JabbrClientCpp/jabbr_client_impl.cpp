@@ -85,6 +85,18 @@ namespace jabbr
             });
     }
 
+    pplx::task<room> jabbr_client_impl::get_room_info(const utility::string_t& room_name)
+    {
+        web::json::value params;
+        params[0] = web::json::value::string(room_name);
+
+        return m_chat_proxy.invoke<web::json::value>(U("GetRoomInfo"), params)
+            .then([](const web::json::value& response)
+            {
+                return json_materializer::create_room(response);
+            });
+    }
+
     pplx::task<void> jabbr_client_impl::join_room(const utility::string_t& room_name)
     {
         web::json::value args;

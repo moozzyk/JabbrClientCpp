@@ -74,23 +74,33 @@ bool jabbr_chat::on_user_input(const std::wstring& user_input)
     return true;
 }
 
-void jabbr_chat::join_room(const std::wstring& room)
+void jabbr_chat::join_room(const std::wstring& room_name)
 {
-    // fire and forget
+    if (room_name == m_current_room.name)
+    {
+        m_console.display_info(std::wstring(L"Already in room ").append(room_name));
+        return;
+    }
 
-    // TODO: & can go away before the task finishes
-    m_jabbr_client.join_room(room)
-        .then([&, room](pplx::task<void> previous_task) mutable
+    m_console.display_info(std::wstring(L"Connecting to room ").append(room_name));
+
+    m_jabbr_client.join_room(room_name)
+        .then([&, room_name]()
+        {
+            return m_jabbr_client.get_room_info(room_name);
+        })
+        .then([&](pplx::task<jabbr::room> previous_task) mutable
         {
             try
             {
-                previous_task.get();
-                m_console.set_title(std::wstring(L"Room: ").append(room));
+                m_current_room = previous_task.get();
+                m_console.display_info(std::wstring(L"Connected to room ").append(m_current_room.name));
+                m_console.display_room(m_current_room);
             }
             catch (const std::exception& e)
             {
                 m_console.display_error(std::wstring(L"Error: ")
                     .append(utility::conversions::to_string_t(e.what())));
             }
-        });
+        }).get();
 }

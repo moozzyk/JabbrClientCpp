@@ -56,7 +56,7 @@ namespace jabbr
 
             if (value.has_field(U("User")) && value.at(U("User")).is_object())
             {
-                m.user = create_user(value);
+                m.user = create_user(value.at(U("User")));
             }
 
             return m;
@@ -99,7 +99,7 @@ namespace jabbr
             {
                 for (auto& recent_message : value.at(U("RecentMessages")).as_array())
                 {
-                    r.owners.push_back(recent_message.as_string());
+                    r.recent_messages.push_back(create_message(recent_message));
                 }
             }
 
@@ -178,7 +178,7 @@ namespace jabbr
                 auto datetime_string = get_string(name, value, U(""));
                 if (datetime_string != U(""))
                 {
-                    return utility::datetime::from_string(datetime_string);
+                    return utility::datetime::from_string(datetime_string, utility::datetime::ISO_8601);
                 }
 
                 return utility::datetime();

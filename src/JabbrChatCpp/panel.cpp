@@ -51,3 +51,38 @@ void panel::fill(wchar_t filler, unsigned short attributes)
         m_buffer[i].Char.UnicodeChar = filler;
     }
 }
+
+void panel::scroll_up()
+{
+    std::memmove(m_buffer, m_buffer + get_width(), get_width() * (get_height() - 1) * sizeof(CHAR_INFO));
+    for (int i = 0; i < get_width(); i++)
+    {
+        m_buffer[get_width() * (get_height() - 1) + i].Char.UnicodeChar = ' ';
+        m_buffer[get_width() * (get_height() - 1) + i].Attributes = 0;
+    }
+}
+
+void panel::write(const std::wstring& message, short& row, short& position, unsigned short attributes)
+{
+    for (auto i = 0; i < message.length();)
+    {
+        for (; position < get_width() && i < message.length(); i++, position++)
+        {
+            m_buffer[(row * get_width()) + position].Char.UnicodeChar = message.at(i);
+            m_buffer[(row * get_width()) + position].Attributes = attributes;
+        }
+
+        if (i < message.length())
+        {
+            position = 0;
+            if (row == get_height() - 1)
+            {
+                scroll_up();
+            }
+            else
+            {
+                row++;
+            }
+        }
+    }
+}

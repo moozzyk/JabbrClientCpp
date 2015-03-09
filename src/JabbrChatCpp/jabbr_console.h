@@ -17,18 +17,23 @@ public:
     void set_title(const std::wstring& title);
     void display_welcome(jabbr_user* user);
     void display_connecting_status(std::wstring status_message);
+    void display_info(const std::wstring& error);
     void display_error(const std::wstring& error);
+    void display_room(const jabbr::room& room);
 
 private:
     void reset_console();
     void redraw();
     void reset_prompt();
     void flush_prompt();
+    void reset_status();
+    void reset_main_panel();
     void set_cursor_position();
     std::wstring get_user_input();
     void fill(short top, short left, short width, short height, wchar_t filler, unsigned short attributes);
     void safe_console_write(const CHAR_INFO* buffer, COORD buffer_size, SMALL_RECT& write_area);
     void safe_console_write(const panel& panel, COORD left_top);
+    void add_message(const jabbr::message& message);
 
 private:
     std::function<bool(std::wstring input)> m_on_user_input;

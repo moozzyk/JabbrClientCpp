@@ -7,7 +7,7 @@ namespace jabbr
 {
     struct message
     {
-        bool is_htnl_encoded;
+        bool is_html_encoded;
         utility::string_t id;
         utility::string_t content;
         utility::datetime when;
