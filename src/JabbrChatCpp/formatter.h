@@ -9,4 +9,5 @@ namespace formatter
     void format_welcome_page_header(panel& panel);
     void format_manual(panel& panel);
     void format_user_on_welcome_page(const jabbr_user& user, panel& panel);
+    void format_error(panel& panel, const std::wstring& error_message);
 }

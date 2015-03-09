@@ -70,4 +70,9 @@ namespace formatter
 
         write_centered(ss.str(), panel, start_row + 2, white_foreground);
     }
+
+    void format_error(panel& panel, const std::wstring& error_message)
+    {
+        write_flush_left(error_message, panel, 0, BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    }
 }

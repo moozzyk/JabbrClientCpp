@@ -60,10 +60,37 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
 
 bool jabbr_chat::on_user_input(const std::wstring& user_input)
 {
-    if (user_input == L":q")
+    auto command = parser.parse(user_input);
+
+    switch (command.type)
     {
+    case command_type::exit:
         return false;
+    case command_type::join_room:
+        join_room(command.argument);
+        break;
     }
 
     return true;
+}
+
+void jabbr_chat::join_room(const std::wstring& room)
+{
+    // fire and forget
+
+    // TODO: & can go away before the task finishes
+    m_jabbr_client.join_room(room)
+        .then([&, room](pplx::task<void> previous_task) mutable
+        {
+            try
+            {
+                previous_task.get();
+                m_console.set_title(std::wstring(L"Room: ").append(room));
+            }
+            catch (const std::exception& e)
+            {
+                m_console.display_error(std::wstring(L"Error: ")
+                    .append(utility::conversions::to_string_t(e.what())));
+            }
+        });
 }

@@ -26,6 +26,11 @@ jabbr_console::jabbr_console(const std::function<bool(const std::wstring& input)
 
 jabbr_console::~jabbr_console() = default;
 
+void jabbr_console::set_title(const std::wstring& title)
+{
+    SetConsoleTitle(title.c_str());
+}
+
 void jabbr_console::display_welcome(jabbr_user* user)
 {
     formatter::format_welcome_page_header(m_main_panel);
@@ -129,7 +134,7 @@ void jabbr_console::reset_console()
     //fill(m_main_panel.get_height() + 1, 0, console_width, 1, L'#', FOREGROUND_GREEN);
     fill(0, m_main_panel.get_width() + 1, 1, m_main_panel.get_height() + 1, L'#', FOREGROUND_GREEN);
 
-    m_main_panel.fill(L'!', 0);
+    m_main_panel.fill(L' ', 0);
     m_status_panel.fill('#', FOREGROUND_GREEN);
     reset_prompt();
     redraw();
@@ -211,4 +216,10 @@ std::wstring jabbr_console::get_user_input()
     }
 
     return input;
+}
+
+void jabbr_console::display_error(const std::wstring& error)
+{
+    formatter::format_error(m_status_panel, error);
+    safe_console_write(m_status_panel, m_status_panel_coordinates);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "jabbrclient\jabbr_client.h"
 #include "jabbr_console.h"
+#include "parser.h"
 
 class jabbr_chat
 {
@@ -12,10 +13,12 @@ public:
 
 private:
     bool on_user_input(const std::wstring& user_input);
+    void join_room(const std::wstring& room);
 
 private:
     jabbr::jabbr_client m_jabbr_client;
     jabbr_console m_console;
     jabbr_user m_user;
+    parser parser;
 };
 

@@ -24,4 +24,9 @@ namespace jabbr
     {
         return m_pImpl->get_rooms();
     }
+
+    pplx::task<void> jabbr_client::join_room(const utility::string_t& room_name)
+    {
+        return m_pImpl->join_room(room_name);
+    }
 }

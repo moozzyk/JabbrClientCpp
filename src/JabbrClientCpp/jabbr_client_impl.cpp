@@ -2,6 +2,7 @@
 #include "jabbr_client_impl.h"
 #include "cpprest\uri_builder.h"
 #include "cpprest\http_client.h"
+#include "cpprest\json.h"
 #include "jabbrclient\default_authentication_provider.h"
 #include "jabbr_events.h"
 #include "json_materializer.h"
@@ -82,5 +83,14 @@ namespace jabbr
                 json_materializer::create_rooms(response, rooms);
                 return rooms;
             });
+    }
+
+    pplx::task<void> jabbr_client_impl::join_room(const utility::string_t& room_name)
+    {
+        web::json::value args;
+        args[0] = web::json::value::string(utility::string_t(U("/join ")).append(room_name));
+        args[1] = web::json::value::string(U(""));
+
+        return m_chat_proxy.invoke<void>(U("Send"), args);
     }
 }

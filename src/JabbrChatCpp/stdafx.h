@@ -12,4 +12,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <tchar.h>
-
+#include <string>
+#include <cctype>
+#include <functional>
+#include <algorithm>

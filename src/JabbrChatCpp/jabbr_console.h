@@ -14,8 +14,10 @@ public:
     ~jabbr_console();
 
     void run();
+    void set_title(const std::wstring& title);
     void display_welcome(jabbr_user* user);
     void display_connecting_status(std::wstring status_message);
+    void display_error(const std::wstring& error);
 
 private:
     void reset_console();
@@ -26,7 +28,7 @@ private:
     std::wstring get_user_input();
     void fill(short top, short left, short width, short height, wchar_t filler, unsigned short attributes);
     void safe_console_write(const CHAR_INFO* buffer, COORD buffer_size, SMALL_RECT& write_area);
-    void jabbr_console::safe_console_write(const panel& panel, COORD left_top);
+    void safe_console_write(const panel& panel, COORD left_top);
 
 private:
     std::function<bool(std::wstring input)> m_on_user_input;

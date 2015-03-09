@@ -16,6 +16,7 @@ namespace jabbr
             std::unique_ptr<authentication_provider> auth_provider = nullptr);
         pplx::task<std::vector<room>> get_rooms();
         pplx::task<user> get_user_info();
+        pplx::task<void> join_room(const utility::string_t& room_name);
 
     private:
         utility::string_t m_url;
