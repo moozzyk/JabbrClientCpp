@@ -4,8 +4,9 @@
 #include "jabbr_console.h"
 #include "formatter.h"
 
-jabbr_console::jabbr_console()
-    : m_input_handle(GetStdHandle(STD_INPUT_HANDLE)), m_output_handle(GetStdHandle(STD_OUTPUT_HANDLE)),
+jabbr_console::jabbr_console(const std::function<bool(const std::wstring& input)>& on_user_input)
+    : m_on_user_input(on_user_input),
+    m_input_handle(GetStdHandle(STD_INPUT_HANDLE)), m_output_handle(GetStdHandle(STD_OUTPUT_HANDLE)),
     m_main_panel(main_panel_width, main_panel_height), m_prompt_panel(prompt_panel_width, prompt_panel_height),
     m_status_panel(status_panel_width, status_panel_height)
 {
@@ -38,7 +39,7 @@ void jabbr_console::display_welcome(jabbr_user* user)
 
 void jabbr_console::display_connecting_status(std::wstring status_message)
 {
-    formatter::write_centered(status_message, m_main_panel, 6, 
+    formatter::write_centered(status_message, m_main_panel, 6,
         FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
     safe_console_write(m_main_panel, m_main_panel_coordinates);
@@ -66,7 +67,10 @@ void jabbr_console::run()
                 break;
 
             case VK_RETURN:
-                process_input();
+                if (!m_on_user_input(get_user_input()))
+                {
+                    exit = true;
+                }
                 reset_prompt();
                 break;
 
@@ -188,7 +192,7 @@ void jabbr_console::safe_console_write(const panel& panel, COORD left_top)
     WriteConsoleOutput(m_output_handle, panel.get_buffer(), panel.get_size(), COORD{ 0, 0 }, &area);
 }
 
-std::wstring jabbr_console::process_input()
+std::wstring jabbr_console::get_user_input()
 {
     auto start_pos = 0, end_pos = prompt_line_length - 1;
     auto buffer = m_prompt_panel.get_buffer();

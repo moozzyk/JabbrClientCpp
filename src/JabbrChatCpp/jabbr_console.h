@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <mutex>
+#include <functional>
 #include "jabbrclient\jabbr_client.h"
 #include "jabbr_user.h"
 #include "panel.h"
@@ -9,7 +10,7 @@
 class jabbr_console
 {
 public:
-    jabbr_console();
+    jabbr_console(const std::function<bool(const std::wstring& input)>& on_user_input);
     ~jabbr_console();
 
     void run();
@@ -22,12 +23,13 @@ private:
     void reset_prompt();
     void flush_prompt();
     void set_cursor_position();
-    std::wstring process_input();
+    std::wstring get_user_input();
     void fill(short top, short left, short width, short height, wchar_t filler, unsigned short attributes);
     void safe_console_write(const CHAR_INFO* buffer, COORD buffer_size, SMALL_RECT& write_area);
     void jabbr_console::safe_console_write(const panel& panel, COORD left_top);
 
 private:
+    std::function<bool(std::wstring input)> m_on_user_input;
     const HANDLE m_input_handle;
     const HANDLE m_output_handle;
 

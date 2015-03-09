@@ -5,10 +5,9 @@
 
 
 jabbr_chat::jabbr_chat(std::wstring url)
-    : m_jabbr_client(jabbr::jabbr_client{url})
-{
-   
-} 
+    : m_jabbr_client(jabbr::jabbr_client{ url }),
+    m_console(jabbr_console(std::bind(&jabbr_chat::on_user_input, this, std::placeholders::_1)))
+{ }
 
 jabbr_chat::~jabbr_chat() = default;
 
@@ -57,4 +56,14 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
         m_console.display_connecting_status(utility::string_t(L"Could not connect to jabbr server. Error: ")
             .append(utility::conversions::to_string_t(e.what())));
     }
+}
+
+bool jabbr_chat::on_user_input(const std::wstring& user_input)
+{
+    if (user_input == L":q")
+    {
+        return false;
+    }
+
+    return true;
 }
