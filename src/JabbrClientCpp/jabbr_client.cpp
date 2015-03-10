@@ -64,4 +64,10 @@ namespace jabbr
     {
         m_pImpl->set_on_message_received(on_message_received);
     }
+
+    void jabbr_client::set_on_private_message_received(
+        const std::function<void(const utility::string_t&, const utility::string_t&, const utility::string_t&)>& on_private_message_received)
+    {
+        m_pImpl->set_on_private_message_received(on_private_message_received);
+    }
 }

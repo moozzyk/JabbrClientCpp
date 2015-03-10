@@ -16,6 +16,15 @@ jabbr_chat::jabbr_chat(std::wstring url)
             m_console->display_message(msg);
         }
     });
+
+    m_jabbr_client.set_on_private_message_received([&](const utility::string_t& from, const utility::string_t& to, const utility::string_t& message)
+    {
+        if (to == m_user.name)
+        {
+            m_console->display_private_message(from, message);
+        }
+    });
+
 }
 
 jabbr_chat::~jabbr_chat() = default;

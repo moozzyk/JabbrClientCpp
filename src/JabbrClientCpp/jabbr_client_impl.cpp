@@ -165,4 +165,24 @@ namespace jabbr
             on_message_received(json_materializer::create_message(params.as_array().at(0)), param_array.at(1).as_string());
         });
     }
+
+    void jabbr_client_impl::set_on_private_message_received(
+        const std::function<void(const utility::string_t&, const utility::string_t&, const utility::string_t&)>& on_private_message_received)
+    {
+        m_chat_proxy.on(U("sendPrivateMessage"), [on_private_message_received](const web::json::value& params)
+        {
+            if (!params.is_array())
+            {
+                return;
+            }
+
+            auto param_array = params.as_array();
+            if (param_array.size() < 3 || !param_array.at(0).is_string() || !param_array.at(1).is_string() || !param_array.at(2).is_string())
+            {
+                return;
+            }
+
+            on_private_message_received(param_array.at(0).as_string(), param_array.at(1).as_string(), param_array.at(2).as_string());
+        });
+    }
 }

@@ -26,6 +26,7 @@ namespace jabbr
         pplx::task<void> disconnect();
 
         void set_on_message_received(const std::function<void(const message&, const utility::string_t&)>& on_message_received);
+        void set_on_private_message_received(const std::function<void(const utility::string_t&, const utility::string_t&, const utility::string_t&)>& on_private_message_received);
 
     private:
         utility::string_t m_url;

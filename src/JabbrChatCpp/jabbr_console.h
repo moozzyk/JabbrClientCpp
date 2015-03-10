@@ -22,6 +22,7 @@ public:
     void clear_status();
     void display_room(const jabbr::room& room);
     void display_message(const jabbr::message& message);
+    void display_private_message(const utility::string_t& from, const utility::string_t& to);
 
 private:
     void reset_console();

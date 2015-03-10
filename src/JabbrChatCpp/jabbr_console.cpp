@@ -312,3 +312,15 @@ void jabbr_console::add_message(const jabbr::message& message)
     m_main_panel.write(L">: ", row, current_position, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     m_main_panel.write(message.content, row, current_position, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
+
+void jabbr_console::display_private_message(const utility::string_t& from, const utility::string_t& message)
+{
+    m_main_panel.scroll_up();
+    short current_position = 0;
+    short row = m_main_panel.get_height() - 1;
+    m_main_panel.write(L"*<", row, current_position, FOREGROUND_RED | FOREGROUND_INTENSITY);
+    m_main_panel.write(from, row, current_position, FOREGROUND_RED | FOREGROUND_INTENSITY);
+    m_main_panel.write(L"*>: ", row, current_position, FOREGROUND_RED | FOREGROUND_INTENSITY);
+    m_main_panel.write(message, row, current_position, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    safe_console_write(m_main_panel, m_main_panel_coordinates);
+}

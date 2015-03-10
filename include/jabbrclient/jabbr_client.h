@@ -29,6 +29,7 @@ namespace jabbr
         JABBRCLIENTCPP_API pplx::task<void> disconnect();
 
         JABBRCLIENTCPP_API void set_on_message_received(const std::function<void(const message&, const utility::string_t&)>& on_message_received);
+        JABBRCLIENTCPP_API void set_on_private_message_received(const std::function<void(const utility::string_t&, const utility::string_t&, const utility::string_t&)>& on_private_message_received);
     private:
         std::shared_ptr<jabbr_client_impl> m_pImpl;
     };
