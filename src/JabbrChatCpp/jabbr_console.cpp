@@ -8,11 +8,13 @@ jabbr_console::jabbr_console(const std::function<bool(const std::wstring& input)
     : m_on_user_input(on_user_input),
     m_input_handle(GetStdHandle(STD_INPUT_HANDLE)), m_output_handle(GetStdHandle(STD_OUTPUT_HANDLE)),
     m_main_panel(main_panel_width, main_panel_height), m_prompt_panel(prompt_panel_width, prompt_panel_height),
-    m_status_panel(status_panel_width, status_panel_height)
+    m_status_panel(status_panel_width, status_panel_height), m_user_panel(user_panel_width, user_panel_height)
 {
     m_main_panel_coordinates = { 0, 0 };
     m_prompt_panel_coordinates = { 0, console_height - prompt_panel_height };
     m_status_panel_coordinates = { 0, main_panel_height + 1 };
+
+    m_user_panel_coordinates = { main_panel_width + 1 /*div*/ + 1, 0 };
 
     SMALL_RECT console_size{ 0, 0, console_width - 1, console_height - 1 };
     SetConsoleWindowInfo(m_output_handle, TRUE, &console_size);
@@ -133,7 +135,8 @@ void jabbr_console::reset_console()
     fill(0, 0, console_width, console_height, L' ', FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
     fill(0, m_main_panel.get_width() + 1, 1, m_main_panel.get_height() + 1, L'#', FOREGROUND_GREEN);
 
-    reset_main_panel();
+    m_main_panel.clear();
+    m_user_panel.clear();
     reset_status();
     reset_prompt();
     redraw();
@@ -236,16 +239,11 @@ void jabbr_console::display_info(const std::wstring& error)
     safe_console_write(m_status_panel, m_status_panel_coordinates);
 }
 
-void jabbr_console::reset_main_panel()
-{
-    m_main_panel.fill(L' ', 0);
-}
-
 void jabbr_console::display_room(const jabbr::room& room)
 {
-    reset_main_panel();
-    m_main_panel.scroll_up();
-    set_title(room.name + L" " + room.topic);
+    m_main_panel.clear();
+    m_user_panel.clear();
+    set_title(room.name + L" - " + room.topic + L" - " + room.welcome);
 
     for (auto const& m : room.recent_messages)
     {
@@ -253,6 +251,43 @@ void jabbr_console::display_room(const jabbr::room& room)
     }
 
     safe_console_write(m_main_panel, m_main_panel_coordinates);
+
+    int row = 1;
+
+    short position = 1;
+    m_user_panel.write_no_overflow(L"Users:", row++, position, FOREGROUND_GREEN);
+
+    for (auto const& u : room.users)
+    {
+        position = 2;
+
+        unsigned short status_color = 0;
+        switch (u.status)
+        {
+        case user_status::active:
+            status_color = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+            break;
+        case user_status::inactive:
+            status_color = FOREGROUND_GREEN | FOREGROUND_RED| FOREGROUND_INTENSITY;
+            break;
+        case user_status::offline:
+            status_color = FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE;
+            break;
+        }
+
+        m_user_panel.write_no_overflow(L" * ", row, position, status_color);
+        m_user_panel.write_no_overflow(u.name, row, position, FOREGROUND_GREEN);
+        if (row == m_user_panel.get_height() - 1)
+        {
+            m_user_panel.scroll_up();
+        }
+        else
+        {
+            row++;
+        }
+    }
+
+    safe_console_write(m_user_panel, m_user_panel_coordinates);
 }
 
 void jabbr_console::add_message(const jabbr::message& message)

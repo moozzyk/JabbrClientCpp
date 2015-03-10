@@ -43,6 +43,11 @@ CHAR_INFO* panel::get_buffer() const
     return m_buffer;
 }
 
+void panel::clear()
+{
+    fill(L' ', 0);
+}
+
 void panel::fill(wchar_t filler, unsigned short attributes)
 {
     for (int i = 0; i < get_buffer_size(); i++)
@@ -84,5 +89,14 @@ void panel::write(const std::wstring& message, short& row, short& position, unsi
                 row++;
             }
         }
+    }
+}
+
+void panel::write_no_overflow(const std::wstring& message, short row, short& position, unsigned short attributes)
+{
+    for (int i = 0; position < get_width() && i < message.length(); i++, position++)
+    {
+        m_buffer[(row * get_width()) + position].Char.UnicodeChar = message.at(i);
+        m_buffer[(row * get_width()) + position].Attributes = attributes;
     }
 }

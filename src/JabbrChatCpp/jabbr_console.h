@@ -27,7 +27,6 @@ private:
     void reset_prompt();
     void flush_prompt();
     void reset_status();
-    void reset_main_panel();
     void set_cursor_position();
     std::wstring get_user_input();
     void fill(short top, short left, short width, short height, wchar_t filler, unsigned short attributes);
@@ -49,6 +48,8 @@ private:
     static const short status_panel_height = 1;
     static const short status_panel_width = console_width;
     static const short prompt_line_length = prompt_panel_height * prompt_panel_width;
+    static const short user_panel_width = console_width - main_panel_width - 1;
+    static const short user_panel_height = main_panel_height;
 
     COORD m_main_panel_coordinates;
     panel m_main_panel;
@@ -56,6 +57,8 @@ private:
     panel m_prompt_panel;
     COORD m_status_panel_coordinates;
     panel m_status_panel;
+    COORD m_user_panel_coordinates;
+    panel m_user_panel;
 
     short m_cursor_location = 0;
 

@@ -131,7 +131,7 @@ namespace jabbr
                     return user_status::active;
                 }
 
-                if (status == U("Inative"))
+                if (status == U("Inactive"))
                 {
                     return user_status::inactive;
                 }

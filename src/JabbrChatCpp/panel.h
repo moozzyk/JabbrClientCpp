@@ -14,9 +14,11 @@ public:
     short get_buffer_size() const;
     CHAR_INFO* get_buffer() const;
 
+    void clear();
     void fill(wchar_t filler, unsigned short attributes);
     void scroll_up();
     void write(const std::wstring& message, short& row, short& position, unsigned short attributes);
+    void write_no_overflow(const std::wstring& message, short row, short& position, unsigned short attributes);
 
 private:
     short m_width;
