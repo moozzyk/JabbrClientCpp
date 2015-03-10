@@ -21,6 +21,7 @@ namespace jabbr
         pplx::task<void> join_room(const utility::string_t& room_name);
         pplx::task<void> leave_room(const utility::string_t& room_name);
         pplx::task<void> send_message(const utility::string_t& message, const utility::string_t& room_name);
+        pplx::task<void> send_private_message(const utility::string_t& user_name, const utility::string_t& message);
         pplx::task<void> log_out(const utility::string_t& user_name);
         pplx::task<void> disconnect();
 

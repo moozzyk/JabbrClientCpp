@@ -16,6 +16,7 @@ private:
     bool on_user_input(const std::wstring& user_input);
     void join_room(const std::wstring& room);
     void leave_current_room();
+    void send_private_message(const std::wstring& user, const std::wstring& message);
 
 private:
     jabbr::jabbr_client m_jabbr_client;

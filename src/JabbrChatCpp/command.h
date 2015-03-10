@@ -5,4 +5,5 @@ struct command
 {
     command_type type;
     std::wstring argument;
+    std::wstring argument2;
 };

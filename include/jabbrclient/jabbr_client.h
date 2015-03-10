@@ -24,6 +24,7 @@ namespace jabbr
         JABBRCLIENTCPP_API pplx::task<void> join_room(const utility::string_t& room_name);
         JABBRCLIENTCPP_API pplx::task<void> leave_room(const utility::string_t& room_name);
         JABBRCLIENTCPP_API pplx::task<void> send_message(const utility::string_t& message, const utility::string_t& room_name);
+        JABBRCLIENTCPP_API pplx::task<void> send_private_message(const utility::string_t& user_name, const utility::string_t& message);
         JABBRCLIENTCPP_API pplx::task<void> log_out(const utility::string_t& user_name);
         JABBRCLIENTCPP_API pplx::task<void> disconnect();
 

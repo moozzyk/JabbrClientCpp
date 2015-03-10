@@ -79,6 +79,9 @@ bool jabbr_chat::on_user_input(const std::wstring& user_input)
     case command_type::leave_room:
         leave_current_room();
         break;
+    case command_type::private_message:
+        send_private_message(command.argument, command.argument2);
+        break;
     default:
         _ASSERTE(command.type == command_type::message);
 
@@ -156,4 +159,23 @@ void jabbr_chat::leave_current_room()
         {
             m_console->display_welcome(m_rooms);
         }).get();
+}
+
+void jabbr_chat::send_private_message(const std::wstring& user, const std::wstring& message)
+{
+    auto &console = m_console;
+
+    m_jabbr_client.send_private_message(user, message)
+        .then([console](pplx::task<void> send_task)
+        {
+            try
+            {
+                send_task.get();
+            }
+            catch (const std::exception& e)
+            {
+                console->display_error(utility::string_t(L"Error sending a message: ")
+                    .append(utility::conversions::to_string_t(e.what())));
+            }
+        });
 }

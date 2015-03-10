@@ -45,6 +45,11 @@ namespace jabbr
         return m_pImpl->send_message(message, room_name);
     }
 
+    pplx::task<void> jabbr_client::send_private_message(const utility::string_t& user_name, const utility::string_t& message)
+    {
+        return m_pImpl->send_private_message(user_name, message);
+    }
+
     pplx::task<void> jabbr_client::log_out(const utility::string_t& user_name)
     {
         return m_pImpl->log_out(user_name);
