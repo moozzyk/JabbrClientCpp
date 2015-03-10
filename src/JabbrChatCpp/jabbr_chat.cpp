@@ -6,14 +6,14 @@
 
 jabbr_chat::jabbr_chat(std::wstring url)
     : m_jabbr_client(jabbr::jabbr_client{ url }),
-    m_console(jabbr_console(std::bind(&jabbr_chat::on_user_input, this, std::placeholders::_1)))
+    m_console(std::make_shared<jabbr_console>(std::bind(&jabbr_chat::on_user_input, this, std::placeholders::_1)))
 {
     // m_jabbr_client stopped synchronously so it's OK to capture by &
     m_jabbr_client.set_on_message_received([&](const jabbr::message& msg, const utility::string_t& room_name)
     {
         if (m_current_room.name == room_name)
         {
-            m_console.display_message(msg);
+            m_console->display_message(msg);
         }
     });
 }
@@ -22,7 +22,7 @@ jabbr_chat::~jabbr_chat() = default;
 
 void jabbr_chat::run(std::wstring user_name, std::wstring password)
 {
-    m_console.display_welcome(nullptr);
+    m_console->display_welcome(nullptr);
 
     auto connect_task = m_jabbr_client.connect(user_name, password)
         .then([&](jabbr::log_on_info log_on_info)
@@ -48,7 +48,7 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
             .append(utility::string_t(i % 6, L'.'))
             .append(utility::string_t(6 - (i % 6), L' '));
 
-        m_console.display_connecting_status(connecting_string);
+        m_console->display_connecting_status(connecting_string);
 
         pplx::wait(300);
     }
@@ -56,13 +56,13 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
     try
     {
         m_user = connect_task.get();
-        m_console.display_welcome(&m_user);
-        m_console.display_connecting_status(L"   Connected    ");
-        m_console.run();
+        m_console->display_welcome(&m_user);
+        m_console->display_connecting_status(L"   Connected    ");
+        m_console->run();
     }
     catch (const std::exception &e)
     {
-        m_console.display_connecting_status(utility::string_t(L"Could not connect to jabbr server. Error: ")
+        m_console->display_connecting_status(utility::string_t(L"Could not connect to jabbr server. Error: ")
             .append(utility::conversions::to_string_t(e.what())));
     }
 
@@ -71,7 +71,7 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
 
 bool jabbr_chat::on_user_input(const std::wstring& user_input)
 {
-    m_console.clear_status();
+    m_console->clear_status();
 
     auto command = parser.parse(user_input);
 
@@ -84,10 +84,9 @@ bool jabbr_chat::on_user_input(const std::wstring& user_input)
         break;
     }
 
-    // TODO: & is dangerous - console should be a smart pointer so that 
-    // it is easy to capture
+    auto& console = m_console;
     m_jabbr_client.send_message(user_input, m_current_room.name)
-        .then([&](pplx::task<void> send_task)
+        .then([console](pplx::task<void> send_task)
         {
             try
             {
@@ -95,7 +94,7 @@ bool jabbr_chat::on_user_input(const std::wstring& user_input)
             }
             catch (const std::exception& e)
             {
-                m_console.display_error(utility::string_t(L"Error sending a message: ")
+                console->display_error(utility::string_t(L"Error sending a message: ")
                     .append(utility::conversions::to_string_t(e.what())));
             }
         });
@@ -107,11 +106,11 @@ void jabbr_chat::join_room(const std::wstring& room_name)
 {
     if (room_name == m_current_room.name)
     {
-        m_console.display_info(std::wstring(L"Already in room ").append(room_name));
+        m_console->display_info(std::wstring(L"Already in room ").append(room_name));
         return;
     }
 
-    m_console.display_info(std::wstring(L"Connecting to room ").append(room_name));
+    m_console->display_info(std::wstring(L"Connecting to room ").append(room_name));
 
     m_jabbr_client.join_room(room_name)
         .then([&, room_name]()
@@ -123,12 +122,12 @@ void jabbr_chat::join_room(const std::wstring& room_name)
             try
             {
                 m_current_room = previous_task.get();
-                m_console.display_info(std::wstring(L"Connected to room ").append(m_current_room.name));
-                m_console.display_room(m_current_room);
+                m_console->display_info(std::wstring(L"Connected to room ").append(m_current_room.name));
+                m_console->display_room(m_current_room);
             }
             catch (const std::exception& e)
             {
-                m_console.display_error(std::wstring(L"Error: ")
+                m_console->display_error(std::wstring(L"Error: ")
                     .append(utility::conversions::to_string_t(e.what())));
             }
         }).get();

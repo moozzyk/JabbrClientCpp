@@ -18,7 +18,7 @@ private:
 
 private:
     jabbr::jabbr_client m_jabbr_client;
-    jabbr_console m_console;
+    std::shared_ptr<jabbr_console> m_console;
     jabbr_user m_user;
     parser parser;
 
