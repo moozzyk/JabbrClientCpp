@@ -115,6 +115,15 @@ namespace jabbr
         return m_chat_proxy.invoke<void>(U("Send"), args);
     }
 
+    pplx::task<void> jabbr_client_impl::log_out(const utility::string_t& user_name)
+    {
+        web::json::value args;
+        args[0] = web::json::value::string(utility::string_t(U("/logout")));
+        args[1] = web::json::value::string(user_name);
+
+        return m_chat_proxy.invoke<void>(U("Send"), args);
+    }
+
     pplx::task<void> jabbr_client_impl::disconnect()
     {
         return m_jabbr_connection->stop();

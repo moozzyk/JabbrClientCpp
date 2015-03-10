@@ -66,7 +66,11 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
             .append(utility::conversions::to_string_t(e.what())));
     }
 
-    m_jabbr_client.disconnect().get();
+    m_jabbr_client.log_out(m_user.get_name())
+        .then([&]()
+        {
+            m_jabbr_client.disconnect();
+        }).get();
 }
 
 bool jabbr_chat::on_user_input(const std::wstring& user_input)

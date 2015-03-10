@@ -20,6 +20,7 @@ namespace jabbr
         pplx::task<user> get_user_info();
         pplx::task<void> join_room(const utility::string_t& room_name);
         pplx::task<void> send_message(const utility::string_t& message, const utility::string_t& room_name);
+        pplx::task<void> log_out(const utility::string_t& user_name);
         pplx::task<void> disconnect();
 
         void set_on_message_received(const std::function<void(const message&, const utility::string_t&)>& on_message_received);
