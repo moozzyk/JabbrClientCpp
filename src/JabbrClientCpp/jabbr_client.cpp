@@ -35,6 +35,11 @@ namespace jabbr
         return m_pImpl->join_room(room_name);
     }
 
+    pplx::task<void> jabbr_client::send_message(const utility::string_t& message, const utility::string_t& room_name)
+    {
+        return m_pImpl->send_message(message, room_name);
+    }
+
     pplx::task<void> jabbr_client::disconnect()
     {
         return m_pImpl->disconnect();

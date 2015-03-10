@@ -71,6 +71,8 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
 
 bool jabbr_chat::on_user_input(const std::wstring& user_input)
 {
+    m_console.clear_status();
+
     auto command = parser.parse(user_input);
 
     switch (command.type)
@@ -81,6 +83,22 @@ bool jabbr_chat::on_user_input(const std::wstring& user_input)
         join_room(command.argument);
         break;
     }
+
+    // TODO: & is dangerous - console should be a smart pointer so that 
+    // it is easy to capture
+    m_jabbr_client.send_message(user_input, m_current_room.name)
+        .then([&](pplx::task<void> send_task)
+        {
+            try
+            {
+                send_task.get();
+            }
+            catch (const std::exception& e)
+            {
+                m_console.display_error(utility::string_t(L"Error sending a message: ")
+                    .append(utility::conversions::to_string_t(e.what())));
+            }
+        });
 
     return true;
 }

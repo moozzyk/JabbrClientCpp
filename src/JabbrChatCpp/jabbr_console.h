@@ -19,6 +19,7 @@ public:
     void display_connecting_status(std::wstring status_message);
     void display_info(const std::wstring& error);
     void display_error(const std::wstring& error);
+    void clear_status();
     void display_room(const jabbr::room& room);
     void display_message(const jabbr::message& message);
 

@@ -239,6 +239,13 @@ void jabbr_console::display_info(const std::wstring& error)
     safe_console_write(m_status_panel, m_status_panel_coordinates);
 }
 
+void jabbr_console::clear_status()
+{
+    reset_status();
+    safe_console_write(m_status_panel, m_status_panel_coordinates);
+
+}
+
 void jabbr_console::display_room(const jabbr::room& room)
 {
     m_main_panel.clear();
