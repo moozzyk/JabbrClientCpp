@@ -15,11 +15,13 @@ public:
 private:
     bool on_user_input(const std::wstring& user_input);
     void join_room(const std::wstring& room);
+    void leave_current_room();
 
 private:
     jabbr::jabbr_client m_jabbr_client;
     std::shared_ptr<jabbr_console> m_console;
-    jabbr_user m_user;
+    jabbr::user m_user;
+    std::vector<jabbr::room> m_rooms;
     parser parser;
 
     jabbr::room m_current_room;

@@ -21,9 +21,12 @@ command parser::parse(const std::wstring& input)
 
     if (input[0] == L'/')
     {
-        if (input[1] == L'j')
+        switch (input[1])
         {
+        case L'j':
             return command{ command_type::join_room, get_argument(input) };
+        case L'l':
+            return command{ command_type::leave_room };
         }
     }
 

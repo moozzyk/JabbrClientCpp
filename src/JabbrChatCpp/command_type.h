@@ -2,5 +2,6 @@ enum class command_type
 {
     exit,
     message,
-    join_room
+    join_room,
+    leave_room
 };

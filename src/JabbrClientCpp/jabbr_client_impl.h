@@ -19,6 +19,7 @@ namespace jabbr
         pplx::task<room> get_room_info(const utility::string_t& room_name);
         pplx::task<user> get_user_info();
         pplx::task<void> join_room(const utility::string_t& room_name);
+        pplx::task<void> leave_room(const utility::string_t& room_name);
         pplx::task<void> send_message(const utility::string_t& message, const utility::string_t& room_name);
         pplx::task<void> log_out(const utility::string_t& user_name);
         pplx::task<void> disconnect();

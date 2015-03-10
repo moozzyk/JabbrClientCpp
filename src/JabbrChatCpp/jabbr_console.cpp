@@ -33,14 +33,12 @@ void jabbr_console::set_title(const std::wstring& title)
     SetConsoleTitle(title.c_str());
 }
 
-void jabbr_console::display_welcome(jabbr_user* user)
+void jabbr_console::display_welcome(const std::vector<jabbr::room>& rooms)
 {
+    m_main_panel.clear();
     formatter::format_welcome_page_header(m_main_panel);
     formatter::format_manual(m_main_panel);
-    if (user)
-    {
-        formatter::format_user_on_welcome_page(*user, m_main_panel);
-    }
+    formatter::format_user_on_welcome_page(rooms, m_main_panel);
     safe_console_write(m_main_panel, m_main_panel_coordinates);
 }
 

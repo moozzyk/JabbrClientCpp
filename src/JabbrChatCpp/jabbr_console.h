@@ -15,7 +15,7 @@ public:
 
     void run();
     void set_title(const std::wstring& title);
-    void display_welcome(jabbr_user* user);
+    void display_welcome(const std::vector<jabbr::room>& rooms);
     void display_connecting_status(std::wstring status_message);
     void display_info(const std::wstring& error);
     void display_error(const std::wstring& error);

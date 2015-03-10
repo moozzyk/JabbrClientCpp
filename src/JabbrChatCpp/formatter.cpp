@@ -50,22 +50,22 @@ namespace formatter
         short start_row = 10;
 
         write(U("Commands:"), panel, start_row, column, white_foreground | FOREGROUND_INTENSITY);
-        write(U("/h         - show help screen"), panel, start_row + 2, column, white_foreground);
-        write(U("ESC        - turns off help screen"), panel, start_row + 3, column, white_foreground);
-        write(U("/j{room}   - join/switch room"), panel, start_row + 4, column, white_foreground);
-        write(U("/l{string} - list groups conatining {string}"), panel, start_row + 5, column, white_foreground);
+        write(U("/j {room}  - join/switch room"), panel, start_row + 2, column, white_foreground);
+        write(U("/l         - leave current room"), panel, start_row + 3, column, white_foreground);
+//        write(U("/j {room}  - join/switch room"), panel, start_row + 4, column, white_foreground);
+//        write(U("/l{string} - list groups conatining {string}"), panel, start_row + 5, column, white_foreground);
         write(U(":q         - exit"), panel, start_row + 6, column, white_foreground);
     }
 
-    void format_user_on_welcome_page(const jabbr_user& user, panel& panel)
+    void format_user_on_welcome_page(const std::vector<jabbr::room>& rooms, panel& panel)
     {
         short start_row = 20;
         write_centered(U("Your rooms:"), panel, start_row, white_foreground | FOREGROUND_INTENSITY);
 
         utility::ostringstream_t ss;
-        for (const auto& r : user.get_rooms())
+        for (const auto& r : rooms)
         {
-            ss << r.get_name() << " ";
+            ss << r.name << " ";
         }
 
         write_centered(ss.str(), panel, start_row + 2, white_foreground);

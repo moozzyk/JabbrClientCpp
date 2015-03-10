@@ -22,24 +22,14 @@ jabbr_chat::~jabbr_chat() = default;
 
 void jabbr_chat::run(std::wstring user_name, std::wstring password)
 {
-    m_console->display_welcome(nullptr);
+    m_console->display_welcome(m_rooms);
 
     auto connect_task = m_jabbr_client.connect(user_name, password)
-        .then([&](jabbr::log_on_info log_on_info)
-    {
-        return m_jabbr_client.get_user_info()
-            .then([log_on_info](jabbr::user user)
+        .then([&](const jabbr::log_on_info& log_on_info)
         {
-            auto user_model = jabbr_user(user);
-            for (const auto &room : log_on_info.rooms)
-            {
-                user_model.add_room(jabbr_room(room));
-            }
-
-            return pplx::task_from_result<jabbr_user>(user_model);
+            m_rooms = log_on_info.rooms;
+            return m_jabbr_client.get_user_info();
         });
-
-    });
 
     for (auto i = 0; !connect_task.is_done(); i++)
     {
@@ -56,7 +46,7 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
     try
     {
         m_user = connect_task.get();
-        m_console->display_welcome(&m_user);
+        m_console->display_welcome(m_rooms);
         m_console->display_connecting_status(L"   Connected    ");
         m_console->run();
     }
@@ -66,7 +56,7 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
             .append(utility::conversions::to_string_t(e.what())));
     }
 
-    m_jabbr_client.log_out(m_user.get_name())
+    m_jabbr_client.log_out(m_user.name)
         .then([&]()
         {
             m_jabbr_client.disconnect();
@@ -86,23 +76,27 @@ bool jabbr_chat::on_user_input(const std::wstring& user_input)
     case command_type::join_room:
         join_room(command.argument);
         break;
+    case command_type::leave_room:
+        leave_current_room();
+        break;
+    default:
+        _ASSERTE(command.type == command_type::message);
+
+        auto& console = m_console;
+        m_jabbr_client.send_message(user_input, m_current_room.name)
+            .then([console](pplx::task<void> send_task)
+            {
+                try
+                {
+                    send_task.get();
+                }
+                catch (const std::exception& e)
+                {
+                    console->display_error(utility::string_t(L"Error sending a message: ")
+                        .append(utility::conversions::to_string_t(e.what())));
+                }
+            });
     }
-
-    auto& console = m_console;
-    m_jabbr_client.send_message(user_input, m_current_room.name)
-        .then([console](pplx::task<void> send_task)
-        {
-            try
-            {
-                send_task.get();
-            }
-            catch (const std::exception& e)
-            {
-                console->display_error(utility::string_t(L"Error sending a message: ")
-                    .append(utility::conversions::to_string_t(e.what())));
-            }
-        });
-
     return true;
 }
 
@@ -126,6 +120,12 @@ void jabbr_chat::join_room(const std::wstring& room_name)
             try
             {
                 m_current_room = previous_task.get();
+                if (std::find_if(m_rooms.begin(), m_rooms.end(),
+                    [&](const jabbr::room& r){ return r.name == m_current_room.name; }) == m_rooms.end())
+                {
+                    m_rooms.push_back(m_current_room);
+                }
+
                 m_console->display_info(std::wstring(L"Connected to room ").append(m_current_room.name));
                 m_console->display_room(m_current_room);
             }
@@ -134,5 +134,26 @@ void jabbr_chat::join_room(const std::wstring& room_name)
                 m_console->display_error(std::wstring(L"Error: ")
                     .append(utility::conversions::to_string_t(e.what())));
             }
+        }).get();
+}
+
+void jabbr_chat::leave_current_room()
+{
+    if (m_current_room.name.length() == 0)
+    {
+        m_console->display_info(std::wstring(L"You currently are not in any room."));
+        return;
+    }
+
+    auto room_name = m_current_room.name;
+    m_current_room = jabbr::room{};
+
+    m_rooms.erase(std::remove_if(m_rooms.begin(), m_rooms.end(),
+        [&](const jabbr::room& r){ return r.name == room_name; }));
+
+    m_jabbr_client.leave_room(room_name)
+        .then([&]()
+        {
+            m_console->display_welcome(m_rooms);
         }).get();
 }
