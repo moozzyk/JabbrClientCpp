@@ -9,6 +9,7 @@ namespace jabbr
     {
         user create_user(const web::json::value& value);
         room create_room(const web::json::value& value);
+        message create_message(const web::json::value& value);
         void create_rooms(const web::json::value& value, std::vector<room>& rooms);
     }
 }

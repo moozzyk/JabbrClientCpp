@@ -252,10 +252,10 @@ void jabbr_console::display_room(const jabbr::room& room)
 
     safe_console_write(m_main_panel, m_main_panel_coordinates);
 
-    int row = 1;
+    short row = 1;
 
     short position = 1;
-    m_user_panel.write_no_overflow(L"Users:", row++, position, FOREGROUND_GREEN);
+    m_user_panel.write_no_overflow(L"Users:", row++, position, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 
     for (auto const& u : room.users)
     {
@@ -276,7 +276,7 @@ void jabbr_console::display_room(const jabbr::room& room)
         }
 
         m_user_panel.write_no_overflow(L" * ", row, position, status_color);
-        m_user_panel.write_no_overflow(u.name, row, position, FOREGROUND_GREEN);
+        m_user_panel.write_no_overflow(u.name, row, position, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         if (row == m_user_panel.get_height() - 1)
         {
             m_user_panel.scroll_up();
@@ -288,6 +288,12 @@ void jabbr_console::display_room(const jabbr::room& room)
     }
 
     safe_console_write(m_user_panel, m_user_panel_coordinates);
+}
+
+void jabbr_console::display_message(const jabbr::message& message)
+{
+    add_message(message);
+    safe_console_write(m_main_panel, m_main_panel_coordinates);
 }
 
 void jabbr_console::add_message(const jabbr::message& message)

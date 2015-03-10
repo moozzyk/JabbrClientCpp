@@ -22,7 +22,9 @@ namespace jabbr
         JABBRCLIENTCPP_API pplx::task<std::vector<room>> get_rooms();
         JABBRCLIENTCPP_API pplx::task<room> get_room_info(const utility::string_t& room_name);
         JABBRCLIENTCPP_API pplx::task<void> join_room(const utility::string_t& room_name);
+        JABBRCLIENTCPP_API pplx::task<void> disconnect();
 
+        JABBRCLIENTCPP_API void set_on_message_received(const std::function<void(const message&, const utility::string_t&)>& on_message_received);
     private:
         std::shared_ptr<jabbr_client_impl> m_pImpl;
     };

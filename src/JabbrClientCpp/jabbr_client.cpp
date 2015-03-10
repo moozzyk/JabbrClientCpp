@@ -34,4 +34,14 @@ namespace jabbr
     {
         return m_pImpl->join_room(room_name);
     }
+
+    pplx::task<void> jabbr_client::disconnect()
+    {
+        return m_pImpl->disconnect();
+    }
+
+    void jabbr_client::set_on_message_received(const std::function<void(const message&, const utility::string_t&)>& on_message_received)
+    {
+        m_pImpl->set_on_message_received(on_message_received);
+    }
 }

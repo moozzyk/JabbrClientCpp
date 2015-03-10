@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 #include "pplx\pplxtasks.h"
 #include "jabbrclient\authentication_provider.h"
 #include "jabbrclient\log_on_info.h"
@@ -18,6 +19,10 @@ namespace jabbr
         pplx::task<room> get_room_info(const utility::string_t& room_name);
         pplx::task<user> get_user_info();
         pplx::task<void> join_room(const utility::string_t& room_name);
+
+        pplx::task<void> disconnect();
+
+        void set_on_message_received(const std::function<void(const message&, const utility::string_t&)>& on_message_received);
 
     private:
         utility::string_t m_url;

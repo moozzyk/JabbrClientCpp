@@ -20,6 +20,7 @@ public:
     void display_info(const std::wstring& error);
     void display_error(const std::wstring& error);
     void display_room(const jabbr::room& room);
+    void display_message(const jabbr::message& message);
 
 private:
     void reset_console();

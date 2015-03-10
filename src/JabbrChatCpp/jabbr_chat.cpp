@@ -7,7 +7,16 @@
 jabbr_chat::jabbr_chat(std::wstring url)
     : m_jabbr_client(jabbr::jabbr_client{ url }),
     m_console(jabbr_console(std::bind(&jabbr_chat::on_user_input, this, std::placeholders::_1)))
-{ }
+{
+    // m_jabbr_client stopped synchronously so it's OK to capture by &
+    m_jabbr_client.set_on_message_received([&](const jabbr::message& msg, const utility::string_t& room_name)
+    {
+        if (m_current_room.name == room_name)
+        {
+            m_console.display_message(msg);
+        }
+    });
+}
 
 jabbr_chat::~jabbr_chat() = default;
 
@@ -56,6 +65,8 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
         m_console.display_connecting_status(utility::string_t(L"Could not connect to jabbr server. Error: ")
             .append(utility::conversions::to_string_t(e.what())));
     }
+
+    m_jabbr_client.disconnect().get();
 }
 
 bool jabbr_chat::on_user_input(const std::wstring& user_input)
