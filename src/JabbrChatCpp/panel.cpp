@@ -69,7 +69,7 @@ void panel::scroll_up()
 
 void panel::write(const std::wstring& message, short& row, short& position, unsigned short attributes)
 {
-    for (auto i = 0; i < message.length();)
+    for (size_t i = 0; i < message.length();)
     {
         for (; position < get_width() && i < message.length(); i++, position++)
         {
@@ -94,7 +94,7 @@ void panel::write(const std::wstring& message, short& row, short& position, unsi
 
 void panel::write_no_overflow(const std::wstring& message, short row, short& position, unsigned short attributes)
 {
-    for (int i = 0; position < get_width() && i < message.length(); i++, position++)
+    for (size_t i = 0; position < get_width() && i < message.length(); i++, position++)
     {
         m_buffer[(row * get_width()) + position].Char.UnicodeChar = message.at(i);
         m_buffer[(row * get_width()) + position].Attributes = attributes;

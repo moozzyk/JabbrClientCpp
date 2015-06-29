@@ -55,11 +55,12 @@ command parser::create_2_arg_command(command_type type, const std::wstring& inpu
 {
     auto args = get_argument(input);
     auto space_pos = args.find_first_of(L' ');
+    auto arg2 = (space_pos >= args.length() - 1) ? L"" : args.substr(space_pos + 1);
 
     return command
     {
         type,
         args.substr(0, space_pos),
-        (space_pos >= args.length() - 1) ? L"" : util::trim(args.substr(space_pos + 1))
+        util::trim(arg2)
     };
 }

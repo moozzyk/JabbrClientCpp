@@ -58,18 +58,18 @@ void jabbr_chat::run(std::wstring user_name, std::wstring password)
         m_console->display_welcome(m_rooms);
         m_console->display_connecting_status(L"   Connected    ");
         m_console->run();
+
+        m_jabbr_client.log_out(m_user.name)
+            .then([&]()
+        {
+            m_jabbr_client.disconnect();
+        }).get();
     }
     catch (const std::exception &e)
     {
         m_console->display_connecting_status(utility::string_t(L"Could not connect to jabbr server. Error: ")
             .append(utility::conversions::to_string_t(e.what())));
     }
-
-    m_jabbr_client.log_out(m_user.name)
-        .then([&]()
-        {
-            m_jabbr_client.disconnect();
-        }).get();
 }
 
 bool jabbr_chat::on_user_input(const std::wstring& user_input)
